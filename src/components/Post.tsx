@@ -1,13 +1,30 @@
 import { format, formatDistanceToNow } from "date-fns"
-import ptBR from "date-fns/locale/pt-BR"
+import { ptBR } from "date-fns/locale"
 
 import styles from "./Post.module.css"
 
 import { Comment } from "./Comment"
 import { Avatar } from "./Avatar"
-import { useState } from "react"
+import { FormEvent, InvalidEvent, useState } from "react"
 
-export function Post({ author, publishedAt, content }) {
+interface Author {
+  name: string
+  position: string
+  avatarUrl: string
+}
+
+interface Content {
+  type: "paragraph" | "link"
+  content: string
+}
+
+interface PostProps {
+  author: Author
+  content: Content[]
+  publishedAt: Date
+}
+
+export function Post({ author, publishedAt, content }: PostProps) {
   const [comments, setComments] = useState(["Post bacana boy!"])
   const [newCommentText, setNewCommentText] = useState("")
 
@@ -22,18 +39,18 @@ export function Post({ author, publishedAt, content }) {
     addSuffix: true,
   })
 
-  function handleCreateNewComment(event) {
+  function handleCreateNewComment(event: FormEvent) {
     event.preventDefault()
 
     setComments([...comments, newCommentText])
     setNewCommentText("")
   }
 
-  function handleNewInvalidComment(event) {
+  function handleNewInvalidComment(event: InvalidEvent<HTMLTextAreaElement>) {
     event.target.setCustomValidity("Este campo é obrigatório!")
   }
 
-  function deleteComment(commentToDelete) {
+  function deleteComment(commentToDelete: string) {
     const commentsWithDeletedOne = comments.filter((comment) => {
       return comment !== commentToDelete
     })
